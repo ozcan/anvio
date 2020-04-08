@@ -83,6 +83,19 @@ Node.prototype.GetChildren = function(leafOnly = false) {
     return children;
 }
 
+Node.prototype.GetAncestors = function() {
+    let q = this;
+    let ancestors = [];
+
+    while (q)
+    {
+        ancestors.push(q);
+        q = q.ancestor;
+    }
+
+    return ancestors;
+}
+
 
 Node.prototype.IterateChildren = function*(leafOnly = false) {
     var n = new NodeIterator(this);

@@ -130,6 +130,9 @@ class GenomeStorage():
 
         filesnpaths.is_output_file_writable(self.db_path)
 
+        if self.storage_path.endswith('.h5'):
+            raise ConfigError("We recenlty switched from HD5 files (.h5) to Sqlite (.db) files for the genome storage, \
+                              you can upgrade your genome storage by running 'anvi-migrate %s'." % self.storage_path)
 
     def populate_next_available_ids(self):
         for table_id, attributes in self.tables.items():
@@ -149,10 +152,10 @@ class GenomeStorage():
 
             # make sure the user knows what they're doing
             if genome_names_to_focus_missing_from_db:
-                raise ConfigError("%d of %d genome names you wanted to focus are missing from the genomes sotrage.\
-                                 Although this may not be a show-stopper, anvi'o likes to be explicit, so here we\
-                                 are. Not going anywhere until you fix this. For instance this is one of the missing\
-                                 genome names: '%s', and this is one random genome name from the database: '%s'" % \
+                raise ConfigError("%d of %d genome names you wanted to focus are missing from the genomes sotrage. "
+                                "Although this may not be a show-stopper, anvi'o likes to be explicit, so here we "
+                                "are. Not going anywhere until you fix this. For instance this is one of the missing "
+                                "genome names: '%s', and this is one random genome name from the database: '%s'" % \
                                          (len(genome_names_to_focus_missing_from_db), len(self.genome_names_to_focus),\
                                          genome_names_to_focus_missing_from_db[0], ', '.join(genome_names_in_db)))
 
@@ -438,8 +441,8 @@ class GenomeStorage():
             raise ConfigError("Functions are not available in this genome storage ('%s'). " % self.storage_path)
 
         if self.skip_init_functions:
-            raise ConfigError("Initialization of functions were skipped when the GenomeStorage\
-                              class was called for '%s'. " % self.storage_path)
+            raise ConfigError("Initialization of functions were skipped when the GenomeStorage "
+                             "class was called for '%s'. " % self.storage_path)
 
         self.is_known_genome(genome_name)
         self.is_known_gene_call(genome_name, gene_callers_id)
