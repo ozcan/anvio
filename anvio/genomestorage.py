@@ -59,20 +59,20 @@ class GenomeStorage():
 
         Attributes = collections.namedtuple('Attributes', 'primary_key has_numeric_key filter filter_source')
 
-        # IMPORTANT: keys of this dictionary are not same as table names. as tables/__init__.py 
+        # IMPORTANT: keys of this dictionary are not same as table names. as tables/__init__.py
         # contains inconsistencies between variable names and table names, keys here follows variable names.
-        # and will be referred as table_id inside this class.  
+        # and will be referred as table_id inside this class.
         self.tables = collections.OrderedDict({
-                'contig_sequences': Attributes(primary_key='contig', has_numeric_key=False, 
+                'contig_sequences': Attributes(primary_key='contig', has_numeric_key=False,
                                                 filter='contig', filter_source='contig'),
 
                 'contigs_info':     Attributes(primary_key='contig', has_numeric_key=False,
                                                 filter='contig', filter_source='contig'),
 
-                'splits_info':      Attributes(primary_key='split', has_numeric_key=False, 
+                'splits_info':      Attributes(primary_key='split', has_numeric_key=False,
                                                 filter='split', filter_source='split'),
 
-                'genes_in_contigs': Attributes(primary_key='gene_callers_id', has_numeric_key=False, 
+                'genes_in_contigs': Attributes(primary_key='gene_callers_id', has_numeric_key=False,
                                                 filter='gene_callers_id', filter_source='gene_callers_id'),
 
                 'genes_in_splits':  Attributes(primary_key='entry_id', has_numeric_key=True,
@@ -84,25 +84,25 @@ class GenomeStorage():
                 'gene_function_calls':  Attributes(primary_key='entry_id', has_numeric_key=True,
                                                     filter='gene_callers_id', filter_source='gene_callers_id'),
 
-                'hmm_hits_info':  Attributes(primary_key='source', has_numeric_key=False, filter=None, 
+                'hmm_hits_info':  Attributes(primary_key='source', has_numeric_key=False, filter=None,
                                                 filter_source=None),
 
-                'hmm_hits':  Attributes(primary_key='entry_id', has_numeric_key=True, 
+                'hmm_hits':  Attributes(primary_key='entry_id', has_numeric_key=True,
                                         filter='gene_callers_id', filter_source='gene_callers_id'),
 
-                'hmm_hits_splits': Attributes(primary_key='entry_id', has_numeric_key=True, 
+                'hmm_hits_splits': Attributes(primary_key='entry_id', has_numeric_key=True,
                                             filter='split', filter_source='split'),
 
-                'nt_position_info': Attributes(primary_key='contig_name', has_numeric_key=False, 
+                'nt_position_info': Attributes(primary_key='contig_name', has_numeric_key=False,
                                             filter='contig_name', filter_source='contig'),
 
-                'splits_taxonomy': Attributes(primary_key='split', has_numeric_key=False, filter='split', 
+                'splits_taxonomy': Attributes(primary_key='split', has_numeric_key=False, filter='split',
                                             filter_source='split'),
 
-                'genes_taxonomy': Attributes(primary_key='gene_callers_id', has_numeric_key=False, 
+                'genes_taxonomy': Attributes(primary_key='gene_callers_id', has_numeric_key=False,
                                             filter='gene_callers_id', filter_source='gene_callers_id'),
 
-                'taxon_names': Attributes(primary_key='taxon_id', has_numeric_key=False, filter=None, 
+                'taxon_names': Attributes(primary_key='taxon_id', has_numeric_key=False, filter=None,
                                             filter_source=None),
             })
 
@@ -139,7 +139,7 @@ class GenomeStorage():
             if attributes.has_numeric_key:
                 name, structure, types = self.get_table_defs(table_id)
 
-                self.next_available_id[table_id] = self.db.get_max_value_in_column(name, 
+                self.next_available_id[table_id] = self.db.get_max_value_in_column(name,
                     attributes.primary_key, value_if_empty=-1) + 1
 
     def init(self):
@@ -174,7 +174,7 @@ class GenomeStorage():
 
         self.gene_info = {}
         self.progress.update('Loading genes info for %s genomes...' % len(self.genomes_info))
-        
+
         gene_aa_sequences_table_name, _, _ = self.get_table_defs('gene_amino_acid_sequences')
         gene_table_name, _, _ = self.get_table_defs('genes_in_contigs')
         gene_functions_table_name, _, _ = self.get_table_defs('gene_function_calls')
@@ -186,13 +186,13 @@ class GenomeStorage():
             if genome_name not in gene_aa_sequences:
                 gene_aa_sequences[genome_name] = {}
 
-            gene_aa_sequences[genome_name][gene_callers_id] = aa_sequence            
+            gene_aa_sequences[genome_name][gene_callers_id] = aa_sequence
 
 
         for gene_info_tuple in self.db.get_some_rows_from_table(gene_table_name, where_clause):
             gene_callers_id, contig, start, stop, direction, partial, version, source, genome_name = gene_info_tuple
             length = stop - start
-            
+
             if genome_name not in self.gene_info:
                 self.gene_info[genome_name] = {}
 
@@ -211,7 +211,7 @@ class GenomeStorage():
         if not self.skip_init_functions:
             for gene_function_tuple in self.db.get_some_rows_from_table(gene_functions_table_name, where_clause):
                 entry_id, gene_callers_id, source, accession, function, e_value, genome_name = gene_function_tuple
-                
+
                 if gene_callers_id not in self.gene_info[genome_name]:
                     continue
 
@@ -249,7 +249,7 @@ class GenomeStorage():
                                in the genome storage. If you see this message while creating \
                                a genome storage with multiple internal or external genomes make sure\
                                that you don't have duplicate entries." % genome['name'])
-        
+
         source_db = db.DB(genome['contigs_db_path'], anvio.__contigs__version__)
 
         for table_id, attributes in self.tables.items():
@@ -283,7 +283,7 @@ class GenomeStorage():
         }
 
         # it will be "WHERE 1" and match all, so no filter
-        where_clause = '1' 
+        where_clause = '1'
 
         if attributes.filter_source in filters:
             first_item = next(iter(filters[attributes.filter_source]))
@@ -335,10 +335,10 @@ class GenomeStorage():
 
             # create indexes
             if attributes.primary_key:
-                self.db._exec("CREATE INDEX %s_primary_index ON %s (%s);" % 
+                self.db._exec("CREATE INDEX %s_primary_index ON %s (%s);" %
                                (table_name, table_name, attributes.primary_key))
 
-                self.db._exec("CREATE INDEX %s_primary_and_genome_index ON %s (%s, genome_name);" % 
+                self.db._exec("CREATE INDEX %s_primary_and_genome_index ON %s (%s, genome_name);" %
                                (table_name, table_name, attributes.primary_key))
 
 
@@ -431,7 +431,7 @@ class GenomeStorage():
 
             gene_call['dna_sequence'] = sequence
 
-        column_name = 'dna_sequence' if report_DNA_sequences else 'aa_sequence' 
+        column_name = 'dna_sequence' if report_DNA_sequences else 'aa_sequence'
 
         return gene_call[column_name]
 
@@ -493,4 +493,3 @@ class GenomeStorage():
 
     def close(self):
         self.db.disconnect()
-
