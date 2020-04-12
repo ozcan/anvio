@@ -131,17 +131,20 @@ class GenomeViewer {
       return track.getLongestContig();
     }));
 
+    this.genomeTracks.forEach((item, i) => {
+      item.offsetX = max - item.getLongestContig();
+    });
 
     let treeWidth = 200;
     let padding = 10;
 
     this.clear();
     this.layers.forEach((layer, order) => {
+      layer = layer[0];
+      let xScale = (this.widthPercent / 100) / (this.canvas.width * layer.width / max);
+      let render = new RenderCanvas(layer, 1 / (xScale * layer.width), 1);
 
-      // TO DO: why?
-      layer = layer[0]
-      let render = new RenderCanvas(layer, 0.1, 1);
-
+      //void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
       this.context.drawImage(render.getBuffer(), 0, 50 + 40 * order);
     });
 

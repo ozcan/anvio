@@ -16,6 +16,8 @@ function initMiniMap(genomeViewer) {
   let mouseDown = false;
   let panningStart = false;
   let panningEnd = false;
+  let movingSelector = false;
+  let pressedBackground = false;
 
   let mouseStartX = 0;
 
@@ -48,6 +50,7 @@ function initMiniMap(genomeViewer) {
 
     panningStart = targetClass.indexOf('-start') > -1
     panningEnd = targetClass.indexOf('-end') > -1
+    movingSelector = targetClass.indexOf('-inner') > -1
     resizing = targetClass.indexOf('minimap-row-divider') > -1
 
     mouseStartX = ev.pageX;
@@ -73,7 +76,7 @@ function initMiniMap(genomeViewer) {
       miniMapSelection.style.width = Math.max(1, (startPercent + widthPercent) - cursorPercent) + '%'
     } else if (mouseDown && panningEnd) {
       miniMapSelection.style.width = Math.max(1, Math.min(100, cursorPercent - startPercent)) + '%';
-    } else if (mouseDown && !resizing && startPercent + widthPercent <= 100) {
+    } else if (mouseDown && movingSelector && startPercent + widthPercent <= 100 && startPercent >= 0) {
       let delta = ev.pageX - mouseStartX;
       let deltaPercent = delta * 100 / bgBox.width;
       if (startPercent + deltaPercent + widthPercent > 100) {
@@ -85,10 +88,12 @@ function initMiniMap(genomeViewer) {
   });
 
   miniMap.addEventListener('mouseup', (ev) => {
+    if (mouseDown && (panningStart || panningEnd || movingSelector)) {
+      genomeViewer.startPercent = parseFloat(miniMapSelection.style.left);
+      genomeViewer.widthPercent = parseFloat(miniMapSelection.style.width);
+      genomeViewer.draw();
+    }
     mouseDown = false;
-    genomeViewer.startPercent = parseFloat(miniMapSelection.style.left);
-    genomeViewer.widthPercent = parseFloat(miniMapSelection.style.width);
-    genomeViewer.draw();
   });
 
 }

@@ -7,6 +7,7 @@ class GenomeTrack {
     this.viewer = viewer;
     this.name = name;
     this.contigs = [];
+    this.offsetX = 0;
   }
 
   getContig(contigName) {
@@ -28,7 +29,6 @@ class GenomeTrack {
 
     contig.name = contigData.name;
     contig.length = contigData.length;
-
     this.contigs.push(contig);
   }
 

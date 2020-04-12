@@ -5,15 +5,6 @@ import {
   initMiniMap
 } from './miniMap.js'
 
-// canvas.toDataURL() not available with OffscreenCanvas ?
-const toDataURL = async (data) => {
-  new Promise(ok => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => ok(reader.result));
-    reader.readAsDataURL(data);
-  });
-}
-
 $(window)
   .on("load", () => {
     init();

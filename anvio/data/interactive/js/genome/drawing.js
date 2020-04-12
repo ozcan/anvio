@@ -21,20 +21,16 @@ class Layer {
 
 class RenderCanvas {
   constructor(layer, xScale, yScale) {
-    this.layer = layer
-    this.xScale = xScale
-    this.yScale = yScale
+    this.layer = layer;
+    this.xScale = xScale;
+    this.yScale = yScale;
   }
 
-  getBuffer() {
-    const xS = (val) => {
-      return val * this.xScale
-    }
-    const yS = (val) => {
-      return val * this.yScale
-    }
+  getBuffer(startPercent, endPercent) {
+    let startThreshold = (typeof startPercent !== 'undefined') ? 0 : (startPercent * this.layer.width / 100);
+    let endThreshold = (typeof startPercent !== 'undefined') ? 100 : (startPercent * this.layer.width / 100);
 
-    const buffer = new OffscreenCanvas(xS(this.layer.width), yS(this.layer.height))
+    const buffer = new OffscreenCanvas(this.xScale * this.layer.width, this.yScale * this.layer.height)
     const ctx = buffer.getContext('2d')
 
     for (const obj of this.layer.objects) {
@@ -45,10 +41,10 @@ class RenderCanvas {
 
       if (shape == 'rectangle') {
         ctx.rect(
-          xS(params.x),
-          yS(params.y),
-          xS(params.width),
-          yS(params.height)
+          this.xScale * params.x,
+          this.yScale * params.y,
+          this.xScale * params.width,
+          this.yScale * params.height
         )
       }
 
