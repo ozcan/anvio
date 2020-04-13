@@ -4,9 +4,6 @@ import {
 import {
   TreeDrawer
 } from './treeDrawer.js';
-import {
-  RenderCanvas
-} from './drawing.js';
 
 
 class GenomeViewer {
@@ -40,8 +37,6 @@ class GenomeViewer {
     this.bindEvents();
 
     this.needsRedraw = true;
-    this.layers = [];
-
     this.startPercent = 0;
     this.widthPercent = 100;
   }
@@ -117,36 +112,14 @@ class GenomeViewer {
   }
 
   draw() {
-    if (this.needsRedraw) {
-      this.layers = [];
 
-      this.genomeTracks.forEach((track) => {
-        this.layers.push(track.getLayers());
-      });
-
-      //this.needsRedraw = false;
-    }
-
-    let max = Math.max(...this.genomeTracks.map((track) => {
-      return track.getLongestContig();
-    }));
-
-    this.genomeTracks.forEach((item, i) => {
-      item.offsetX = max - item.getLongestContig();
+    this.genomeTracks.forEach((track) => {
+      console.log(track.getLayers())
+      //this.layers.push();
     });
 
     let treeWidth = 200;
     let padding = 10;
-
-    this.clear();
-    this.layers.forEach((layer, order) => {
-      layer = layer[0];
-      let xScale = (this.widthPercent / 100) / (this.canvas.width * layer.width / max);
-      let render = new RenderCanvas(layer, 1 / (xScale * layer.width), 1);
-
-      //void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-      this.context.drawImage(render.getBuffer(), 0, 50 + 40 * order);
-    });
 
     if (this.hasTree) {
       let tree = new TreeDrawer(this, this.order, treeWidth, padding);

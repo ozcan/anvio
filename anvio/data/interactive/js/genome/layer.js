@@ -16,22 +16,10 @@ class Layer {
       }
     })
   }
-}
 
-
-class RenderCanvas {
-  constructor(layer, xScale, yScale) {
-    this.layer = layer;
-    this.xScale = xScale;
-    this.yScale = yScale;
-  }
-
-  getBuffer(startPercent, endPercent) {
-    let startThreshold = (typeof startPercent !== 'undefined') ? 0 : (startPercent * this.layer.width / 100);
-    let endThreshold = (typeof startPercent !== 'undefined') ? 100 : (startPercent * this.layer.width / 100);
-
+  render(xScale, yScale) {
     const buffer = new OffscreenCanvas(this.xScale * this.layer.width, this.yScale * this.layer.height)
-    const ctx = buffer.getContext('2d')
+    const ctx = buffer.getContext('2d');
 
     for (const obj of this.layer.objects) {
       let shape = obj.shape
@@ -63,9 +51,6 @@ class RenderCanvas {
   }
 }
 
-
-
 export {
   Layer,
-  RenderCanvas,
 }

@@ -1,6 +1,6 @@
 import {
   Layer
-} from './drawing.js';
+} from './layer.js';
 
 class Contig {
   constructor(viewer) {

@@ -1,7 +1,3 @@
-import {
-  RenderCanvas
-} from './drawing.js';
-
 function initMiniMap(genomeViewer) {
   const qS = (s) => document.querySelector(s);
   let miniMap = qS('.minimap');
@@ -34,10 +30,8 @@ function initMiniMap(genomeViewer) {
     }));
 
     genomeViewer.layers.forEach((layer, order) => {
-      // TO DO: why?
-      layer = layer[0];
-      let render = new RenderCanvas(layer, bgBox.width / max, 1);
-      ctx.drawImage(render.getBuffer(), 0, 12 * order);
+      layerBuffer = layer[0].render();
+      ctx.drawImage(layerBuffer, 0, 12 * order);
     });
   }
 
