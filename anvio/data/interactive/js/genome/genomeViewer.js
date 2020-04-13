@@ -46,31 +46,7 @@ class GenomeViewer {
   */
 
   bindEvents() {
-    this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
-    this.canvas.addEventListener('mousedown', (event) => this.handleMouseDown(event));
-    this.canvas.addEventListener('mouseup', (event) => this.handleMouseUp(event));
-    this.canvas.addEventListener('wheel', (event) => this.handleWheel(event));
     window.addEventListener('resize', (event) => this.handleResize(event));
-  }
-
-  handleMouseMove(event) {
-    if (this.mouseDown) {
-      this.centerPos = event.x - this.panStart.x;
-      this.draw();
-    }
-  }
-
-  handleMouseDown(event) {
-    this.mouseDown = true;
-    this.panStart = {
-      'x': event.x - this.centerPos,
-      'y': event.y,
-      'target': null
-    };
-  }
-
-  handleMouseUp(event) {
-    this.mouseDown = false;
   }
 
   handleResize(event) {
@@ -78,17 +54,6 @@ class GenomeViewer {
     this.canvas.height = window.innerHeight;
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.draw();
-  }
-
-  handleWheel(event) {
-    let deltaTime = Date.now() - this.lastScrollTime;
-
-    if (deltaTime > 10) {
-      this.centerPos -= event.deltaX * 4;
-      this.lastScrollTime = Date.now();
-    }
-
     this.draw();
   }
 
@@ -112,10 +77,11 @@ class GenomeViewer {
   }
 
   draw() {
+    this.clear()
 
-    this.genomeTracks.forEach((track) => {
-      console.log(track.getLayers())
-      //this.layers.push();
+    this.genomeTracks.forEach((track, i) => {
+      let buffer = track.getLayers()[0].render(0.001, 1);
+      this.context.drawImage(buffer, 0, 50 + 40 * i);
     });
 
     let treeWidth = 200;
@@ -148,7 +114,6 @@ class GenomeViewer {
 
     return track;
   }
-
 
   addContig(genomeName, contigData) {
     let track = this.getGenomeTrack(genomeName);
