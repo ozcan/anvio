@@ -79,19 +79,29 @@ class GenomeViewer {
       return track.getLongestContig();
     }));
 
+    let treeWidth = 200;
+    let padding = 10;
+
     this.genomeTracks.forEach((track, i) => {
-      const xScale = (1 / (this.widthPercent / 100)) * (this.width / max);
+      const xScale = (1 / (this.widthPercent / 100)) * ((this.width - treeWidth) / max);
       let buffer = track.getLayers()[0].render(xScale, 1);
+
+      let trackWidth = this.hasTree ? this.width - treeWidth : this.width;
 
       // s -> source
       // d -> destination
-      // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-      this.context.drawImage(buffer, xScale * (max * this.startPercent / 100), 0, this.width, 40,
-        0, 50 + 40 * i, this.width, 40);
-    });
+      let sx = xScale * (max * this.startPercent / 100)
+      let sy = 0
+      let sWidth = trackWidth;
+      let sHeight = 40;
 
-    let treeWidth = 200;
-    let padding = 10;
+      let dx = treeWidth + track.offsetX * xScale;
+      let dy = 50 + 40 * i;
+      let dWidth = trackWidth;
+      let dHeight = 40;
+
+      this.context.drawImage(buffer, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    });
 
     if (this.hasTree) {
       let tree = new TreeDrawer(this, this.order, treeWidth, padding);
