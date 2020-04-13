@@ -18,10 +18,10 @@ class Layer {
   }
 
   render(xScale, yScale) {
-    const buffer = new OffscreenCanvas(this.xScale * this.layer.width, this.yScale * this.layer.height)
+    const buffer = new OffscreenCanvas(xScale * this.width, yScale * this.height)
     const ctx = buffer.getContext('2d');
 
-    for (const obj of this.layer.objects) {
+    for (const obj of this.objects) {
       let shape = obj.shape
       let params = obj.params
 
@@ -29,10 +29,10 @@ class Layer {
 
       if (shape == 'rectangle') {
         ctx.rect(
-          this.xScale * params.x,
-          this.yScale * params.y,
-          this.xScale * params.width,
-          this.yScale * params.height
+          xScale * params.x,
+          yScale * params.y,
+          xScale * params.width,
+          yScale * params.height
         )
       }
 

@@ -37,6 +37,7 @@ class GenomeViewer {
     this.bindEvents();
 
     this.needsRedraw = true;
+
     this.startPercent = 0;
     this.widthPercent = 100;
   }
@@ -62,11 +63,6 @@ class GenomeViewer {
       Drawing methods
   */
 
-  center() {
-    this.centerPos = 0;
-    this.draw();
-  }
-
   clear() {
     let ctx = this.context;
 
@@ -79,9 +75,19 @@ class GenomeViewer {
   draw() {
     this.clear()
 
+    let max = Math.max(...this.genomeTracks.map((track) => {
+      return track.getLongestContig();
+    }));
+
     this.genomeTracks.forEach((track, i) => {
-      let buffer = track.getLayers()[0].render(0.001, 1);
-      this.context.drawImage(buffer, 0, 50 + 40 * i);
+      const xScale = (1 / (this.widthPercent / 100)) * (this.width / max);
+      let buffer = track.getLayers()[0].render(xScale, 1);
+
+      // s -> source
+      // d -> destination
+      // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+      this.context.drawImage(buffer, xScale * (max * this.startPercent / 100), 0, this.width, 40,
+        0, 50 + 40 * i, this.width, 40);
     });
 
     let treeWidth = 200;

@@ -3,8 +3,7 @@ import {
 } from './layer.js';
 
 class Contig {
-  constructor(viewer) {
-    this.viewer = viewer;
+  constructor() {
     this.name = null;
     this.length = 0;
     this.genes = [];
@@ -19,10 +18,6 @@ class Contig {
       return (gene.gene_callers_id == gene_callers_id);
     });
     return gene;
-  }
-
-  scale(point) {
-    return parseInt(point / this.viewer.basesPerPixel);
   }
 
   getLayers() {

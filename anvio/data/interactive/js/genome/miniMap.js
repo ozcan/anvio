@@ -29,8 +29,9 @@ function initMiniMap(genomeViewer) {
       return track.getLongestContig();
     }));
 
-    genomeViewer.layers.forEach((layer, order) => {
-      layerBuffer = layer[0].render();
+    genomeViewer.genomeTracks.forEach((track, order) => {
+      const xScale = miniMapCanvas.width / max;
+      const layerBuffer = track.getLayers()[0].render(xScale, 1);
       ctx.drawImage(layerBuffer, 0, 12 * order);
     });
   }

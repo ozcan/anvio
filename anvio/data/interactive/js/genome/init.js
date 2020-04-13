@@ -51,7 +51,6 @@ async function init() {
           }
 
           genomeViewer.handleResize();
-          genomeViewer.center();
         })
         .then(() => {
           initMiniMap(genomeViewer);
