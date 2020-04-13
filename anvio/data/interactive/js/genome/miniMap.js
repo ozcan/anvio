@@ -29,10 +29,12 @@ function initMiniMap(genomeViewer) {
       return track.getLongestContig();
     }));
 
+    const numTracks = genomeViewer.genomeTracks.length;
+
     genomeViewer.genomeTracks.forEach((track, order) => {
       const xScale = miniMapCanvas.width / max;
       const layerBuffer = track.getLayers()[0].render(xScale, 1);
-      ctx.drawImage(layerBuffer, 0, 12 * order);
+      ctx.drawImage(layerBuffer, 0, order / numTracks * miniMapCanvas.height);
     });
   }
 
@@ -54,6 +56,7 @@ function initMiniMap(genomeViewer) {
   document.body.addEventListener('mousemove', (ev) => {
     if (mouseDown && resizing) {
       miniMap.style.height = document.body.clientHeight - ev.clientY + 'px';
+      resizeHandler();
     }
   });
 
