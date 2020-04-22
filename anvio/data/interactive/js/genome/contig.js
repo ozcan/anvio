@@ -46,7 +46,7 @@ class Contig {
         y: 3,
         width: width,
         height: 10,
-        fillStyle: (gene.direction == 'f') ? 'rgb(255, 0, 0)' : 'rgb(0, 255, 0)'
+        fillStyle: (gene.direction == 'f') ? '#99BFB3' : '#395252'
       })
       /*            draw.path({
                       'fill': true,

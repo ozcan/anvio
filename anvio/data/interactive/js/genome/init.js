@@ -22,7 +22,7 @@ async function init() {
       response.json()
         .then((data) => {
           try {
-            //console.log(data);
+            console.log(data);
             for (const genome_name in data.contigs) {
               for (const contig_name in data.contigs[genome_name]) {
                 let contig_info = data.contigs[genome_name][contig_name];

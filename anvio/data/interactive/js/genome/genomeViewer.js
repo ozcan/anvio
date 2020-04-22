@@ -23,7 +23,7 @@ class GenomeViewer {
     this.height = 0;
 
     this.genomeTracks = [];
-    this.ribbons = [];
+    this.geneClusters = [];
 
     this.mouseDown = false;
     this.hasTree = false;
@@ -48,6 +48,7 @@ class GenomeViewer {
 
   bindEvents() {
     window.addEventListener('resize', (event) => this.handleResize(event));
+    this.canvas.addEventListener('mousemove', (event) => this.handleMouseMove(event));
   }
 
   handleResize(event) {
@@ -58,6 +59,30 @@ class GenomeViewer {
     this.draw();
   }
 
+  handleMouseMove(event) {
+    let point = {
+      'x': event.clientX,
+      'y': event.clientY
+    };
+
+    let treeBox = {
+      'x': 0,
+      'y': 0,
+      'width': 200,
+      'height': this.height + 80,
+    }
+
+    if (this.hasTree && this.pointInBox(point, treeBox)) {
+      console.log('hovering tree');
+    }
+  }
+
+  pointInBox(point, box) {
+    return point.x >= box.x &&
+      point.x <= (box.x + box.width) &&
+      point.y >= box.y &&
+      point.y <= (box.y + box.height)
+  }
 
   /*
       Drawing methods
@@ -108,11 +133,6 @@ class GenomeViewer {
       this.context.clearRect(0, 0, treeWidth, this.height + 80);
       this.context.drawImage(tree.getBuffer(), 0, 40);
     }
-
-    /*
-    this.ribbons.forEach((ribbon) => {
-        ribbon.draw();
-    });*/
   }
 
 
@@ -142,6 +162,10 @@ class GenomeViewer {
     let contig = track.getContig(contigName);
 
     contig.addGene(geneData);
+  }
+
+  addGeneCluster(listGenes) {
+
   }
 
   setOrder(order) {
