@@ -6,13 +6,13 @@
 import os
 import sys
 import gzip
+import tarfile
 import time
 import copy
 import socket
 import shutil
 import smtplib
 import hashlib
-import Bio.PDB as PDB
 import textwrap
 import linecache
 import webbrowser
@@ -23,6 +23,7 @@ import urllib.request, urllib.error, urllib.parse
 
 import numpy as np
 import pandas as pd
+import Bio.PDB as PDB
 
 from numba import jit
 from collections import Counter
@@ -381,6 +382,20 @@ def gzip_decompress_file(input_file_path, output_file_path=None, keep_original=T
 
     return output_file_path
 
+def tar_extract_file(input_file_path, output_file_path=None, keep_original=True):
+    filesnpaths.is_file_tar_file(input_file_path)
+
+    if not output_file_path:
+        raise ConfigError("The tar_extract_file function is displeased because an output file path has not been specified. "
+                          "If you are seeing this message, you are probably a developer, so go fix your code please, and "
+                          "everyone will be happy then.")
+
+    tf = tarfile.open(input_file_path)
+    tf.extractall(path = output_file_path)
+
+    if not keep_original:
+        os.remove(input_file_path)
+
 
 class RunInDirectory(object):
     """ Run any block of code in a specified directory. Return to original directory
@@ -540,18 +555,32 @@ def store_dataframe_as_TAB_delimited_file(d, output_path, columns=None, include_
     return output_path
 
 
-def store_dict_as_TAB_delimited_file(d, output_path, headers=None, file_obj=None, key_header=None, keys_order=None):
-    '''
-        Store a dictionary of dictionaries as a TAB-delimited file.
-        input:
-            d - dictionary of dictionaries
-            output_path - output path
-            headers - headers of the secondary dictionary to include (by default include all)
-                      these are the columns that will be included in the output file (this
-                      doesn't include the first column which is the keys of the major dictionary)
-            file_obj - file_object to use for writing
-            key_header - the header for the first column (by default: 'key')
-    '''
+def store_dict_as_TAB_delimited_file(d, output_path, headers=None, file_obj=None, key_header=None, keys_order=None, header_item_conversion_dict=None):
+    """Store a dictionary of dictionaries as a TAB-delimited file.
+
+    Parameters
+    ==========
+    d: dictionary
+        A dictionary of dictionaries where each first order key represents a row,
+        and each key in the subdictionary represents a column.
+    output_path: string
+        Output path for the TAB delmited file.path
+    headers: list
+        Headers of the subdictionary to include (by default include all)
+        these are the columns that will be included in the output file (this
+        doesn't include the first column which is the keys of the major dictionary)
+    file_obj: file_object
+        A file object ot write (instead of the output file path)
+    key_header: string
+        The header for the first column ('key' if None)
+    header_item_conversion_dict: dictionary
+        To replace the column names at the time of writing.
+
+    Returns
+    =======
+    output_path
+    """
+
     if not file_obj:
         filesnpaths.is_output_file_writable(output_path)
 
@@ -564,7 +593,17 @@ def store_dict_as_TAB_delimited_file(d, output_path, headers=None, file_obj=None
     if not headers:
         headers = [key_header] + sorted(list(d.values())[0].keys())
 
-    f.write('%s\n' % '\t'.join(headers))
+    # write header after converting column names (if necessary)
+    if header_item_conversion_dict:
+        missing_headers = [h for h in headers[1:] if h not in header_item_conversion_dict]
+        if len(missing_headers):
+            raise ConfigError("Your header item conversion dict is missing keys for one or "
+                              "more headers :/ Here is a list of those that do not have any "
+                              "entry in the dictionary you sent: '%s'." % (', '.join(missing_headers)))
+        header_text = '\t'.join([headers[0]] + [header_item_conversion_dict[h] for h in headers[1:]])
+    else:
+        header_text = '\t'.join(headers)
+    f.write('%s\n' % header_text)
 
     if not keys_order:
         keys_order = sorted(d.keys())
@@ -3195,6 +3234,11 @@ def is_genes_db(db_path):
         raise ConfigError("'%s' is not an anvi'o genes database." % db_path)
     return True
 
+def is_kegg_modules_db(db_path):
+    if get_db_type(db_path) != 'modules':
+        raise ConfigError("'%s' is not an anvi'o KEGG modules database." % db_path)
+    return True
+
 
 def is_profile_db_merged(profile_db_path):
     is_profile_db(profile_db_path)
@@ -3288,7 +3332,7 @@ def download_file(url, output_file_path, progress=progress, run=run):
     f.close()
 
     progress.end()
-    run.info('Downloaded succesfully', output_file_path)
+    run.info('Downloaded successfully', output_file_path)
 
 
 def get_remote_file_content(url, gzipped=False):
@@ -3614,4 +3658,3 @@ class Mailer:
         self.progress.end()
 
         self.run.info('E-mail', 'Successfully sent to "%s"' % to)
-

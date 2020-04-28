@@ -106,8 +106,6 @@ class ContigsSuperclass(object):
         self.split_name_to_genes_in_splits_entry_ids = {} # for fast access to all self.genes_in_splits entries for a given split
         self.gene_callers_id_to_split_name_dict = {} # for fast access to a split name that contains a given gene callers id
 
-        self.nt_positions_info = None
-
         self.gene_function_call_sources = []
         self.gene_function_calls_dict = {}
         self.gene_function_calls_initiated = False
@@ -504,7 +502,7 @@ class ContigsSuperclass(object):
             if gene_callers_id not in self.gene_function_calls_dict:
                 self.gene_function_calls_dict[gene_callers_id] = dict([(s, None) for s in self.gene_function_call_sources])
 
-            if self.gene_function_calls_dict[gene_callers_id][source]:
+            if self.gene_function_calls_dict[gene_callers_id][source] and e_value:
                 if self.gene_function_calls_dict[gene_callers_id][source][2] < e_value:
                     # 'what we have:', self.gene_function_calls_dict[gene_callers_id][source]
                     # 'rejected    :', ('%s :: %s' % (function if function else 'unknown', accession), e_value)
@@ -828,10 +826,6 @@ class ContigsSuperclass(object):
         # First, we populate the first 3 columns of data, 'in_complete_gene_call',
         # 'in_complete_gene_call', and 'base_pos_in_codon'. This is done straightforwardly by
         # accessing self.nt_positions_info
-
-        if not self.nt_positions_info:
-            raise ConfigError("get_gene_info_for_each_position :: I am asked to return stuff, but "
-                              "self.nt_position_info is None!")
 
         if (not self.a_meta['genes_are_called']) or (not contig_name in self.nt_positions_info) or (not len(self.nt_positions_info[contig_name])):
             # In these cases everything gets 0
@@ -2849,7 +2843,7 @@ class ProfileSuperclass(object):
         total_counts_of_sites_in_gene = 0
         total_counts_of_sites_in_gene_normalized = 0
         mean_three_prime = 0
-        below_threshold, over_threshold = 0, 0
+        below_threshold = 0
 
         # Split gene coverage values into splits that are nonzero
         insertion_splits_nonzero = [numpy.array(list(g)) for k, g in itertools.groupby(gene_coverage_values_per_nt, lambda x: x != 0) if k]
@@ -3681,11 +3675,11 @@ class ContigsDatabase:
         prodigal_translation_table = A('prodigal_translation_table')
 
         if external_gene_calls_file_path:
-            filesnpaths.is_file_tab_delimited(external_gene_calls_file_path)
+            filesnpaths.is_proper_external_gene_calls_file(external_gene_calls_file_path)
 
         if external_gene_calls_file_path and skip_gene_calling:
             raise ConfigError("You provided a file for external gene calls, and used requested gene calling to be "
-                               "skipped. Please make up your mind.")
+                              "skipped. Please make up your mind.")
 
         if (external_gene_calls_file_path or skip_gene_calling) and prodigal_translation_table:
             raise ConfigError("You asked anvi'o to %s, yet you set a specific translation table for prodigal. These "
@@ -3966,7 +3960,7 @@ class ContigsDatabase:
     def compress_nt_position_info(self, contig_length, genes_in_contig, genes_in_contigs_dict):
         """This function compresses information regarding each nucleotide position in a given contig
            into a small int. Every nucleotide position is represented by four bits depending on whether
-           they occur in a complete opoen reading frame, and which base they correspond to in a codon.
+           they occur in a complete open reading frame, and which base they correspond to in a codon.
 
                 0000
                 ||||
