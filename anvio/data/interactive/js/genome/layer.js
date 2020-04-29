@@ -34,6 +34,18 @@ class Layer {
           xScale * params.width,
           yScale * params.height
         )
+      } else if (shape == 'path') {
+        ctx.beginPath()
+        for (let i = 0; i < params.points.length; i++) {
+          let pointX = xScale * params.points[i][0]
+          let pointY = yScale * params.points[i][1]
+
+          if (i == 0) {
+            ctx.moveTo(pointX, pointY)
+          } else {
+            ctx.lineTo(pointX, pointY)
+          }
+        }
       }
 
       if (params.hasOwnProperty('fillStyle')) {

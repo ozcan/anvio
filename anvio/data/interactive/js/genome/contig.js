@@ -37,23 +37,20 @@ class Contig {
     this.genes.forEach((gene) => {
       let start = gene.start
       let width = gene.stop - gene.start
-
       let triangleWidth = (width >= 10) ? 10 : width
+      let verticalPadding = 3;
+      let height = 10;
 
-      layer.rectangle({
+      layer.path({
         fill: true,
-        x: start,
-        y: 3,
-        width: width,
-        height: 10,
-        fillStyle: (gene.direction == 'f') ? '#99BFB3' : '#395252'
-      })
-      /*            draw.path({
-                      'fill': true,
-                      'fillStyle': '#F9A520',
-                      'points': [{'x': start, 'y': 3}],
-                      'flipX': (gene.direction == 'r') ? true : false
-                  })*/
+        fillStyle: '#FF0000',
+        points: [
+          // starting from tip, then top
+          [start, 8],
+          [start + triangleWidth, 3],
+          [start + width, 3],
+          [start + width, 13],
+          [start + triangleWidth, 13],
 
         ]
       })
