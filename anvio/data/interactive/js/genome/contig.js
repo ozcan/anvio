@@ -55,32 +55,8 @@ class Contig {
                       'flipX': (gene.direction == 'r') ? true : false
                   })*/
 
-      /*
-                  if (width > 4) {
-                      // draw arrow head
-                      if (gene.direction == 'f') {
-                          ctx.moveTo(start + width - triangleWidth, 0);
-                          ctx.lineTo(start + width, 8);
-                          ctx.lineTo(start + width - triangleWidth, 16);
-                      } else {
-                          ctx.moveTo(start + triangleWidth, 0);
-                          ctx.lineTo(start, 8);
-                          ctx.lineTo(start + triangleWidth, 16);
-                      }
-                  } else {
-                      // only rectangle
-                      ctx.rect(start, 3, width, 10);
-                  }
-
-                  // draw rectangle near arrow head if there is space
-                  if (width - triangleWidth > 0) {
-                      if (gene.direction == 'f') {
-                          ctx.rect(start, 3, width - triangleWidth, 10);
-                      } else {
-                          ctx.rect(start + triangleWidth, 3, width - triangleWidth, 10);
-                      }
-                  }
-                  ctx.fill();*/
+        ]
+      })
     });
 
     return layer

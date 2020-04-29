@@ -19,12 +19,12 @@ pp = terminal.pretty_print
 
 class GenomeViewer(PanSuperclass):
     def __init__(self, args, run=run, progress=progress):
-        
+
         self.run = run
         self.progress = progress
         self.args = args
         self.mode = 'genome'
-        
+
         PanSuperclass.__init__(self, self.args)
 
         A = lambda x: args.__dict__[x] if x in args.__dict__ else None
@@ -83,20 +83,12 @@ class GenomeViewer(PanSuperclass):
 
             for gene_callers_id in neighbors:
                 neighbors[gene_callers_id]['gene_callers_id'] = gene_callers_id
-            
+
             genes.extend(neighbors.values())
 
-        return { 
-            'genes': genes, 
-            'clusters': clusters, 
+        return {
+            'genes': genes,
+            'clusters': clusters,
             'contigs': contigs,
-            'layers_orders': self.layers_order_data_dict 
+            'layers_orders': self.layers_order_data_dict
             }
-
-
-
-
-
-
-
-
