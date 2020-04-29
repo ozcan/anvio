@@ -31,24 +31,26 @@ class GenomeViewer(PanSuperclass):
         self.pan_db_path = A('pan_db')
         self.genomes_storage_path = A('genomes_storage')
         self.gene_callers_id = A('gene_callers_id')
-
-        self.genome_name = 'E_faecalis_6240'
-        self.gene_callers_id = 1338
-
         self.layers_order_data_dict = TableForLayerOrders(self.args).get()
+
+        self.genome_name = None
+        self.gene_callers_id = None
 
 
     def get_neighbors(self):
         pan_db = db.DB(self.pan_db_path, anvio.__pan__version__)
         genome_storage = db.DB(self.genomes_storage_path, anvio.__genomes_storage_version__)
 
+        genome_filter_query = 'genome_name LIKE "%s"' % self.genome_name if self.genome_name else '1=1'
+        gene_filter_query = 'gene_caller_id LIKE "%s"' % str(self.gene_callers_id) if self.gene_callers_id else '1=1'
+
         gene_cluster_row = pan_db.get_some_rows_from_table_as_dict(
-            'gene_clusters', 'genome_name LIKE "%s" and gene_caller_id LIKE "%s"' % (self.genome_name, str(self.gene_callers_id)))
+            'gene_clusters', '%s and %s' % (genome_filter_query, gene_filter_query))
 
         gene_cluster_id = next(iter(gene_cluster_row.values()))['gene_cluster_id']
 
         genes_in_cluster = pan_db.get_some_rows_from_table_as_dict(
-            'gene_clusters', 'gene_cluster_id LIKE "%s"' % (gene_cluster_id))
+            'gene_clusters', gene_filter_query)
 
         genes = []
         clusters = {}
@@ -60,7 +62,7 @@ class GenomeViewer(PanSuperclass):
 
             gene_callers_id = entry['gene_caller_id']
             genome_name = entry['genome_name']
-            clusters[entry['gene_cluster_id']].append({'genome_name': genome_name, 
+            clusters[entry['gene_cluster_id']].append({'genome_name': genome_name,
                                                        'gene_callers_id': gene_callers_id})
 
 
