@@ -89,6 +89,7 @@ function initMiniMap(genomeViewer) {
     if (mouseDown && (panningStart || panningEnd || movingSelector)) {
       genomeViewer.startPercent = parseFloat(miniMapSelection.style.left);
       genomeViewer.widthPercent = parseFloat(miniMapSelection.style.width);
+
       genomeViewer.draw();
     }
     mouseDown = false;

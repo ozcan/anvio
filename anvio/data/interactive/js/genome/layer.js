@@ -17,6 +17,40 @@ class Layer {
     })
   }
 
+  renderSVG() {
+    let elements = []
+
+    for (const obj of this.objects) {
+      let shape = obj.shape
+      let params = obj.params
+
+      let attrString = ""
+
+      if (params.hasOwnProperty('fill')) {
+        attrString += ` fill="${params.fill}"`
+      }
+
+      if (shape === 'rectangle') {
+        elements.push(`<rect x="${params.x}"
+                            y="${params.y}"
+                            width="${params.width}"
+                            height="${params.height}"
+                            ${attrString}
+                        />`)
+      } else if (shape === 'path') {
+        elements.push(`<rect x="${params.x}"
+                            y="${params.y}"
+                            width="${params.width}"
+                            height="${params.height}"
+                            ${attrString}
+                        />`)
+      }
+    }
+
+    return elements.join('\n')
+
+  }
+
   render(xScale, yScale) {
     const buffer = new OffscreenCanvas(xScale * this.width, yScale * this.height)
     const ctx = buffer.getContext('2d');
@@ -48,11 +82,8 @@ class Layer {
         }
       }
 
-      if (params.hasOwnProperty('fillStyle')) {
-        ctx.fillStyle = params.fillStyle
-      }
-
-      if (params.hasOwnProperty('fill') && params.fill) {
+      if (params.hasOwnProperty('fill')) {
+        ctx.fillStyle = params.fill
         ctx.fill()
       } else {
         ctx.stroke()

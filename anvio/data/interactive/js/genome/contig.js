@@ -25,12 +25,11 @@ class Contig {
 
     // Background
     layer.rectangle({
-      fill: true,
       x: 0,
       y: 3,
       width: this.length,
       height: 10,
-      fillStyle: 'rgba(0, 0, 0, 0.2)'
+      fill: 'rgba(0, 0, 0, 0.2)'
     })
 
     // draw genes
