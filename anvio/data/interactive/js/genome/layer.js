@@ -46,9 +46,7 @@ class Layer {
                         />`)
       }
     }
-
     return elements.join('\n')
-
   }
 
   render(xScale, yScale) {

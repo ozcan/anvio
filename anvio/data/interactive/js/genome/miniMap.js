@@ -25,15 +25,14 @@ function initMiniMap(genomeViewer) {
 
     let ctx = miniMapCanvas.getContext('2d');
     ctx.clearRect(0, 0, bgBox.width, bgBox.height);
-    let max = Math.max(...genomeViewer.genomeTracks.map((track) => {
-      return track.getLongestContig();
-    }));
+    let max = Math.max(...genomeViewer.contigs.map(c => c.length))
 
-    const numTracks = genomeViewer.genomeTracks.length;
+    const numTracks = genomeViewer.contigs.length;
 
-    genomeViewer.genomeTracks.forEach((track, order) => {
+    genomeViewer.contigs.forEach((contig, order) => {
       const xScale = miniMapCanvas.width / max;
-      const layerBuffer = track.getLayers()[0].render(xScale, 1);
+      const layerBuffer = contig.getLayers()
+        .render(xScale, 1);
       ctx.drawImage(layerBuffer, 0, order / numTracks * miniMapCanvas.height);
     });
   }

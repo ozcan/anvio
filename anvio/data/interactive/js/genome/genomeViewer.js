@@ -1,6 +1,6 @@
 import {
-  GenomeTrack
-} from './genomeTrack.js';
+  Contig
+} from './contig.js';
 import {
   TreeDrawer
 } from './treeDrawer.js';
@@ -9,11 +9,12 @@ import {
 class GenomeViewer {
   constructor(options) {
     let defaults = {
-      'canvas': '',
+      'container': '',
       'showGenomeLabels': true,
       'showGeneLabels': true,
       'showTree': true,
       'showGCContentOverlay': true,
+      'basesPerPixel': 10000
     }
 
     this.options = $.extend(defaults, options);
@@ -22,7 +23,7 @@ class GenomeViewer {
     this.width = 0;
     this.height = 0;
 
-    this.genomeTracks = [];
+    this.contigs = [];
     this.geneClusters = [];
 
     this.mouseDown = false;
@@ -100,32 +101,32 @@ class GenomeViewer {
   draw() {
     this.clear()
 
-    let max = Math.max(...this.genomeTracks.map((track) => {
-      return track.getLongestContig();
-    }));
-
+    let max = Math.max(...this.contigs.map(contig => contig.length))
     let treeWidth = 200;
     let padding = 10;
 
-    this.genomeTracks.forEach((track, i) => {
-      const xScale = (1 / (this.widthPercent / 100)) * ((this.width - treeWidth) / max);
-      let buffer = track.getLayers()[0].render(xScale, 1);
+    this.contigs.forEach((contig, i) => {
+      let layers = contig.getLayers()
+      console.log(layers.renderSVG())
 
-      let trackWidth = this.hasTree ? this.width - treeWidth : this.width;
-
-      // s -> source
-      // d -> destination
-      let sx = xScale * (max * this.startPercent / 100)
-      let sy = 0
-      let sWidth = trackWidth;
-      let sHeight = 40;
-
-      let dx = treeWidth + track.offsetX * xScale;
-      let dy = 50 + 40 * i;
-      let dWidth = trackWidth;
-      let dHeight = 40;
-
-      this.context.drawImage(buffer, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+      // const xScale = (1 / (this.widthPercent / 100)) * ((this.width - treeWidth) / max);
+      // let buffer = track.getLayers()[0].render(xScale, 1);
+      //
+      // let trackWidth = this.hasTree ? this.width - treeWidth : this.width;
+      //
+      // // s -> source
+      // // d -> destination
+      // let sx = xScale * (max * this.startPercent / 100)
+      // let sy = 0
+      // let sWidth = trackWidth;
+      // let sHeight = 40;
+      //
+      // let dx = treeWidth + track.offsetX * xScale;
+      // let dy = 50 + 40 * i;
+      // let dWidth = trackWidth;
+      // let dHeight = 40;
+      //
+      // this.context.drawImage(buffer, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     });
 
     if (this.hasTree) {
@@ -140,32 +141,17 @@ class GenomeViewer {
       Data access
   */
 
-  getGenomeTrack(genomeName) {
-    let track = this.genomeTracks.find((track) => track.name == genomeName);
-
-    if (typeof track === 'undefined') {
-      track = new GenomeTrack(this, genomeName);
-      this.genomeTracks.push(track);
-    }
-
-    return track;
+  getContig(contigName) {
+    let contig = this.contigs.find((c) => c.name == contigName);
   }
 
-  addContig(genomeName, contigData) {
-    let track = this.getGenomeTrack(genomeName);
-    track.addContig(contigData);
-
+  addContig(contigData) {
+    this.contigs.push(new Contig(contigData))
   }
 
-  addGene(genomeName, contigName, geneData) {
-    let track = this.getGenomeTrack(genomeName);
+  addGene(contigName, geneData) {
     let contig = track.getContig(contigName);
-
     contig.addGene(geneData);
-  }
-
-  addGeneCluster(listGenes) {
-
   }
 
   setOrder(order) {

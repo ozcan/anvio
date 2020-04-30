@@ -3,10 +3,15 @@ import {
 } from './layer.js';
 
 class Contig {
-  constructor() {
+  constructor(viewer) {
+    this.viewer = viewer
     this.name = null;
     this.length = 0;
     this.genes = [];
+  }
+
+  scale(num) {
+    return num * this.viewer.options.basesPerPixel
   }
 
   addGene(geneData) {
@@ -21,21 +26,21 @@ class Contig {
   }
 
   getLayers() {
-    let layer = new Layer(this.length, 20)
+    let layer = new Layer(this.scale(this.length), 20)
 
     // Background
     layer.rectangle({
       x: 0,
       y: 3,
-      width: this.length,
+      width: this.scale(this.length),
       height: 10,
       fill: 'rgba(0, 0, 0, 0.2)'
     })
 
     // draw genes
     this.genes.forEach((gene) => {
-      let start = gene.start
-      let width = gene.stop - gene.start
+      let start = this.scale(gene.start)
+      let width = this.scale(gene.stop - gene.start)
       let triangleWidth = (width >= 10) ? 10 : width
       let verticalPadding = 3;
       let height = 10;
